@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>3D AR Pizza Test</title>
+    
+    <!-- AR Tracking & Render Engine Core -->
+    <script src="https://aframe.io"></script>
+    <script src="https://jsdelivr.net"></script>
+    
+    <style>
+      body { margin: 0; overflow: hidden; font-family: sans-serif; }
+      /* Control button to lock the pizza to your phone screen */
+      #lock-btn {
+        position: absolute;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999;
+        padding: 14px 28px;
+        background: #e65100;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+
+    <button id="lock-btn" onclick="toggleLock()">Freeze Pizza to Screen</button>
+
+    <!-- Connects to your pizza target file -->
+    <a-scene 
+      id="ar-scene"
+      mindar-image="imageTargetSrc: ./pizza-target.mind; autoStart: true; uiScanning: yes;" 
+      embedded 
+      renderer="colorManagement: true, physicallyCorrectLights: true" 
+      vr-mode-ui="enabled: false" 
+      device-orientation-permission-ui="enabled: false">
+      
+      <a-assets>
+        <!-- Connects to your pizza 3D model file -->
+        <a-asset-item id="pizzaModel" src="./pizza.glb"></a-asset-item>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <!-- Track target position 0 (the first picture inside your mind file) -->
+      
+        <!-- Interactive model container for swipes -->
+        
+          <a-gltf-model 
+            src="#pizzaModel" 
+            position="0 0 0" 
+            scale="0.5 0.5 0.5">
+          </a-gltf-model>
+        
+      
+
+    </a-scene>
+
+    <script>
+      let isLocked = false;
+      const sceneEl = document.querySelector('#ar-scene');
+      const container = document.querySelector('#model-container');
+      const target = document.querySelector('#ar-target');
+      const btn = document.querySelector('#lock-btn');
+
+      // Swipe Gestures for Low-End Mobile Screen Rotation
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      window.addEventListener('touchstart', (e) => {
+        if(e.touches.length === 1) {
+          touchStartX = e.touches.clientX;
+          touchStartY = e.touches.clientY;
+        }
+      });
+
+      window.addEventListener('touchmove', (e) => {
+        if(e.touches.length === 1) {
+          let deltaX = e.touches.clientX - touchStartX;
+          let deltaY = e.touches.clientY - touchStartY;
+          
+          container.object3D.rotation.y += deltaX * 0.01;
+          container.object3D.rotation.x += deltaY * 0.01;
+          
+          touchStartX = e.touches.clientX;
+          touchStartY = e.touches.clientY;
+        }
+      });
+
+      // Freezes model on screen so user can look away from the physical menu paper
+      function toggleLock() {
+        const sceneSystem = sceneEl.systems["mindar-image-system"];
+        if (!isLocked) {
+          sceneSystem.stop(); 
+          document.querySelector('a-scene').appendChild(container);
+          container.setAttribute('position', '0 0 -1.2'); 
+          btn.innerText = "Unfreeze / Re-scan Paper";
+          btn.style.background = "#2e7d32";
+          isLocked = true;
+        } else {
+          target.appendChild(container);
+          container.setAttribute('position', '0 0 0');
+          container.setAttribute('rotation', '0 0 0');
+          sceneSystem.start(); 
+          btn.innerText = "Freeze Pizza to Screen";
+          btn.style.background = "#e65100";
+          isLocked = false;
+        }
+      }
+    </script>
+  </body>
+</html>
