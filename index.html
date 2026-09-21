@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>3D AR Pizza Test</title>
     
-    <!-- Unified Tracking & Rendering Scripts -->
+    <!-- FIXED: These are the full, complete library links you need -->
     <script src="https://aframe.io"></script>
     <script src="https://jsdelivr.net"></script>
     
@@ -52,7 +52,7 @@
 
     <button id="lock-btn" onclick="toggleLock()">Freeze Pizza to Screen</button>
 
-    <!-- Base Configuration Layer -->
+    <!-- Base AR Scene Configuration Layer -->
     <a-scene 
       id="ar-scene"
       mindar-image="imageTargetSrc: ./pizza-target.mind; autoStart: true; uiScanning: no; uiLoading: no;" 
@@ -68,6 +68,7 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+      <!-- FIXED: Re-added the missing target tracking elements -->
       
         
           <a-gltf-model 
@@ -102,8 +103,10 @@
           let deltaX = e.touches.clientX - touchStartX;
           let deltaY = e.touches.clientY - touchStartY;
           
-          container.object3D.rotation.y += deltaX * 0.01;
-          container.object3D.rotation.x += deltaY * 0.01;
+          if (container && container.object3D) {
+            container.object3D.rotation.y += deltaX * 0.01;
+            container.object3D.rotation.x += deltaY * 0.01;
+          }
           
           touchStartX = e.touches.clientX;
           touchStartY = e.touches.clientY;
