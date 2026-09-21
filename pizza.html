@@ -9,7 +9,6 @@
     <script src="https://jsdelivr.net"></script>
     
     <style>
-      /* Force HTML body to be transparent so the browser camera view shows through */
       html, body { 
         margin: 0; 
         padding: 0;
@@ -17,9 +16,19 @@
         height: 100%;
         overflow: hidden; 
         font-family: sans-serif;
-        background-color: transparent !important;
       }
       
+      /* Make sure the video feed from the camera is visible on screen */
+      video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover;
+        z-index: -1;
+      }
+
       /* Control button to lock the pizza to your phone screen */
       #lock-btn {
         position: absolute;
@@ -43,26 +52,22 @@
 
     <button id="lock-btn" onclick="toggleLock()">Freeze Pizza to Screen</button>
 
-    <!-- Connects to your pizza-target.mind tracking file with transparent canvas rules -->
+    <!-- uiScanning: no tells the engine to start immediately without looking for external UI graphics -->
     <a-scene 
       id="ar-scene"
-      mindar-image="imageTargetSrc: ./pizza-target.mind; autoStart: true; uiScanning: yes;" 
+      mindar-image="imageTargetSrc: ./pizza-target.mind; autoStart: true; uiScanning: no; uiLoading: no;" 
       embedded 
-      renderer="colorManagement: true, physicallyCorrectLights: true, alpha: true" 
+      renderer="colorManagement: true, physicallyCorrectLights: true" 
       vr-mode-ui="enabled: false" 
-      device-orientation-permission-ui="enabled: false"
-      style="background-color: transparent;">
+      device-orientation-permission-ui="enabled: false">
       
       <a-assets>
-        <!-- Connects directly to your pizza.glb 3D model asset -->
         <a-asset-item id="pizzaModel" src="./pizza.glb"></a-asset-item>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- Tracks target position 0 (the pizza image inside your compiled tracking file) -->
       
-        <!-- Interactive model container for touch swipe adjustments -->
         
           <a-gltf-model 
             src="#pizzaModel" 
@@ -81,7 +86,6 @@
       const target = document.querySelector('#ar-target');
       const btn = document.querySelector('#lock-btn');
 
-      // Touch Gestures for Mobile Device Screen Rotation
       let touchStartX = 0;
       let touchStartY = 0;
 
@@ -105,7 +109,6 @@
         }
       });
 
-      // Freezes model on screen so the user can look away from physical menu papers
       function toggleLock() {
         const sceneSystem = sceneEl.systems["mindar-image-system"];
         if (!isLocked) {
