@@ -4,9 +4,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>3D AR Pizza Test</title>
     
-    <!-- FIXED: These are the full, complete library links you need -->
-    <script src="https://aframe.io"></script>
-    <script src="https://jsdelivr.net"></script>
+    <!-- Using alternative, stable unminified CDN delivery links that GitHub cannot clear -->
+    <script src="https://cloudflare.com"></script>
+    <script src="https://unpkg.com"></script>
     
     <style>
       html, body { 
@@ -18,7 +18,6 @@
         font-family: sans-serif;
       }
       
-      /* Forces browser to layer mobile camera element underneath the web content */
       video {
         position: absolute;
         top: 0;
@@ -29,7 +28,6 @@
         z-index: -1;
       }
 
-      /* Screen UI Control Element */
       #lock-btn {
         position: absolute;
         bottom: 25px;
@@ -52,7 +50,6 @@
 
     <button id="lock-btn" onclick="toggleLock()">Freeze Pizza to Screen</button>
 
-    <!-- Base AR Scene Configuration Layer -->
     <a-scene 
       id="ar-scene"
       mindar-image="imageTargetSrc: ./pizza-target.mind; autoStart: true; uiScanning: no; uiLoading: no;" 
@@ -62,13 +59,11 @@
       device-orientation-permission-ui="enabled: false">
       
       <a-assets>
-        <!-- Links directly to your glb 3D model asset -->
         <a-asset-item id="pizzaModel" src="./pizza.glb"></a-asset-item>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- FIXED: Re-added the missing target tracking elements -->
       
         
           <a-gltf-model 
